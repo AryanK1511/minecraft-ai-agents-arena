@@ -1,8 +1,17 @@
 node_modules/
 .env
+.env.*
+!.env.example
 .runtime/
 *.log
 dist/
 dashboard/dist/
 shared/runs/*
 !shared/runs/.gitkeep
+
+# local credentials
+.cursor/mcp.json
+.mcp.json
+credentials.json
+*.pem
+*.key

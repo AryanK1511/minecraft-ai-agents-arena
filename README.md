@@ -84,13 +84,13 @@ The defaults are Qwen3 30B A3B Instruct 2507, Mistral Small 3.2 24B Instruct and
 Llama 3.3 70B Instruct. Shared rules and requirements live under `shared/`.
 Model changes apply to new runs.
 
-The default shared budget is **$1 per run**. Set `RUN_BUDGET_USD` in `.env`, recreate
-the app container and Reset to apply a new limit. Existing runs retain theirs.
+The default shared budget is **$5 per run**. Set `RUN_BUDGET_USD` in `.env` and recreate
+the app container. A higher limit raises the current run on startup; a lower limit applies on Reset.
 A central ledger reserves funds for concurrent requests using conservative input
 bounds and output caps. Provider ceilings are $1/M input and $2/M output tokens.
 Actual reported usage is recorded in integer nanodollars. Unknown billing retains
 its reservation and pauses execution; completion requests are never blindly retried.
-No model upgrades occur automatically. Finishing within $1 is a target, not a guarantee.
+No model upgrades occur automatically. Finishing within $5 is a target, not a guarantee.
 
 SQLite stores blueprints, duties, claims, outcomes, messages and usage. Each run
 exports `summary.json`, `world.json` and `messages.md` under `shared/runs`.

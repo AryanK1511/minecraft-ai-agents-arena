@@ -34,7 +34,7 @@ services:
     environment:
       MC_HOST: minecraft
       RCON_PASSWORD: local-compatibility-only
-      RUN_BUDGET_USD: '${RUN_BUDGET_USD:-1}'
+      RUN_BUDGET_USD: '${RUN_BUDGET_USD:-5}'
     depends_on:
       minecraft:
         condition: service_healthy

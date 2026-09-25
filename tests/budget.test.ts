@@ -7,7 +7,7 @@ import { Store } from '../src/core/store.js';
 import { OpenRouter } from '../src/core/openrouter.js';
 test('concurrent reservations cannot exceed the shared run budget and restart retains unresolved billing', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'arena-budget-'));
-  const store = new Store(dir);
+  const store = new Store(dir, 1);
   try {
     assert.throws(() => store.reserve(1), /paused/);
     store.state.status = 'running';
@@ -17,7 +17,7 @@ test('concurrent reservations cannot exceed the shared run budget and restart re
     store.settle(id, 200_000_000, 'agent1');
     assert.equal(store.state.spent, 200_000_000);
     store.db.close();
-    const restarted = new Store(dir);
+    const restarted = new Store(dir, 1);
     assert.equal(restarted.state.status, 'paused');
     assert.match(restarted.state.reason, /Unresolved/);
     assert.equal(Object.keys(restarted.state.reservations).length, 1);

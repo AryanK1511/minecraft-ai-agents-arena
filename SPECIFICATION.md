@@ -16,7 +16,7 @@ The user explicitly revised the original plan:
 
 Create a local Docker Compose project running Minecraft Java **26.3**, three AI players, and a small control dashboard. The agents collaboratively design and build a house using supplied survival materials. You join as **aryank1511**, automatically placed in spectator mode at a viewpoint showing the entire arena.
 
-Use inexpensive OpenRouter models with a **shared $1 budget per run**. Everything starts paused.
+Use inexpensive OpenRouter models with a **shared $5 budget per run**. Everything starts paused.
 
 ## Server and arena
 
@@ -65,7 +65,7 @@ These are inexpensive candidates from three model families, currently listed by 
 - Coordinate task ownership and construction-region reservations centrally. Serialize shared chest access; release abandoned reservations after disconnects.
 - Persist the task board, blueprint revisions, agent memory, action results, and usage in SQLite. Export readable messages and run summaries into the shared run folder.
 - Supply compact world observations and recent changes instead of full transcripts. Call models when decisions are needed, with at most one outstanding request per agent.
-- Enforce the $1 run budget through central reservations for pending requests, output limits, provider price ceilings, and reconciliation with reported usage. Pause if pricing or billed usage cannot be resolved safely.
+- Enforce the $5 run budget through central reservations for pending requests, output limits, provider price ceilings, and reconciliation with reported usage. Pause if pricing or billed usage cannot be resolved safely.
 - Bound retries for API errors and failed actions. Repeated failures or lack of progress pause the affected work and appear in the dashboard; no automatic model upgrades.
 
 ## Dashboard and lifecycle
@@ -86,7 +86,7 @@ These are inexpensive candidates from three model families, currently listed by 
 - **Construction:** Deterministic routines build a small fixture in survival, including elevated placement, doors, beds, and scaffolding cleanup.
 - **Coordination:** Conflicting claims, stale blueprints, interrupted actions, chest contention, and reconnects cannot duplicate work or corrupt shared state.
 - **Cost and recovery:** Mock API failures, malformed tool calls, concurrent budget reservations, and restarts. Confirm no model calls occur before Start or after budget/completion pause.
-- **End-to-end:** Run the three selected models, verify that each contributes to the house, inspect the completion checks, and record actual cost. Budget exhaustion preserves an incomplete run; completion within $1 is a target, not a guarantee.
+- **End-to-end:** Run the three selected models, verify that each contributes to the house, inspect the completion checks, and record actual cost. Budget exhaustion preserves an incomplete run; completion within $5 is a target, not a guarantee.
 - **Viewing:** Confirm the full arena fits in the default spectator view. Walls and roofs may conceal the interior, as agreed.
 - Assume Docker Desktop and an OpenRouter key with credit are available. Docker and Compose are installed, but daemon access was not verified because the current sandbox denied socket access.
 - This first version is local-only, with supplied materials, no resource gathering, and no browser-based 3D Minecraft viewer.

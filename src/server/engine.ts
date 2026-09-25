@@ -39,7 +39,7 @@ const descriptions: Record<keyof typeof schemas, string> = {
 };
 const tools: ToolSpec[] = Object.entries(schemas).map(([name, schema]) => ({ type: 'function', function: { name, description: descriptions[name as keyof typeof schemas], parameters: z.toJSONSchema(schema) as Record<string, unknown> } }));
 export class Engine {
-  store = new Store(process.env.RUNS_DIR ?? 'shared/runs', Number(process.env.RUN_BUDGET_USD ?? 1));
+  store = new Store(process.env.RUNS_DIR ?? 'shared/runs', Number(process.env.RUN_BUDGET_USD ?? 5));
   coordinator = new Coordinator(this.store);
   router = new OpenRouter(this.store, process.env.OPENROUTER_API_KEY ?? '');
   world = new World(process.env.MC_HOST ?? 'minecraft', process.env.RCON_PASSWORD ?? 'local-compatibility-only', (id, connected) => {

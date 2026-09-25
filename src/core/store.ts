@@ -6,13 +6,14 @@ import { IDS, type AgentId, type RunState } from './types.js';
 export class Store {
   db: DatabaseSync;
   state: RunState;
-  constructor(public directory = 'shared/runs', public budget = 1) {
+  constructor(public directory = 'shared/runs', public budget = 5) {
     if (!Number.isFinite(budget) || budget <= 0 || !Number.isSafeInteger(Math.round(budget * 1e9))) throw new Error('RUN_BUDGET_USD must be a positive, finite dollar amount');
     mkdirSync(directory, { recursive: true });
     this.db = new DatabaseSync(join(directory, 'arena.sqlite'));
     this.db.exec('PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS state (id INTEGER PRIMARY KEY CHECK(id=1), json TEXT NOT NULL); CREATE TABLE IF NOT EXISTS events (seq INTEGER PRIMARY KEY, run TEXT, at TEXT, kind TEXT, json TEXT);');
     const row = this.db.prepare('SELECT json FROM state WHERE id=1').get() as { json: string } | undefined;
     this.state = row ? JSON.parse(row.json) : this.fresh();
+    if (this.budget > this.state.limit) this.state.limit = this.budget;
     this.state.status = 'paused';
     this.state.reason = Object.keys(this.state.reservations).length ? 'Unresolved request reservations from previous process; reconcile billing before resume.' : 'Restarted paused; world reconciliation required.';
     for (const id of IDS) { this.state.agents[id].connected = false; this.state.agents[id].action = 'paused'; }
