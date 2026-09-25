@@ -44,7 +44,11 @@ export class Engine {
   router = new OpenRouter(this.store, process.env.OPENROUTER_API_KEY ?? '');
   world = new World(process.env.MC_HOST ?? 'minecraft', process.env.RCON_PASSWORD ?? 'local-compatibility-only', (id, connected) => {
     this.store.state.agents[id].connected = connected;
-    if (!connected) { this.coordinator.release(id); this.store.pause(`${id} disconnected; Resume reconnects and reconciles`); this.world.stop(); }
+    if (!connected) {
+      this.coordinator.release(id);
+      this.store.state.agents[id].action = this.store.state.status === 'running' ? 'reconnecting' : this.store.state.status;
+      if (this.store.state.status === 'running') this.say(id, 'I disconnected. My duty is released while I reconnect; keep working.');
+    }
     this.publish();
   });
   constructor() {
@@ -66,6 +70,7 @@ export class Engine {
   loops: Promise<void>[] = [];
   lastSnapshot: Snapshot = { blocks: [], players: [], revision: 0, paused: true };
   controlBusy = false;
+  cleanupLeader = 0;
   publish() { for (const listener of this.listeners) listener(); }
   async initialize() {
     this.controlBusy = true;
@@ -161,6 +166,7 @@ export class Engine {
     const state = this.store.state, bp = state.blueprint;
     if (bp && !bp.approved && bp.votes.includes(id)) return false;
     if (bp?.approved && state.tasks.some(t=>t.status!=='done') && !state.tasks.some(t=>t.owner===id && t.status==='claimed') && !this.observation(id).availableTasks.length) return false;
+    if (bp?.approved && state.tasks.length > 0 && state.tasks.every(t=>t.status==='done')) return id === IDS[this.cleanupLeader];
     return true;
   }
   async execute(id: AgentId, name: keyof typeof schemas, input: unknown) {
@@ -208,8 +214,20 @@ export class Engine {
         if (name === 'remove_block') { await this.world.remove(id, data); return { removed: data }; }
         await this.world.ensure(id, selected);
         for (const block of selected) { this.world.check(); const result = await this.world.place(id, block); if (!result.alreadyPresent) { placed++; this.store.state.agents[id].contributions++; this.store.save('block-placed', { agent: id, task: task.id, block }); } }
-        await this.reconcile(); return { placed, task: task.id, complete: task.status === 'done' };
-      } catch (error) { if (this.store.state.status === 'running') task.failures++; task.error = error instanceof Error ? error.message : String(error); if (task.failures >= 3) this.store.pause(`${task.id} failed three times: ${task.error}`); this.store.save('partial-action', { agent: id, task: task.id, placed, error: task.error }); throw new Error(`Partial progress ${placed}: ${task.error}`); }
+        await this.reconcile();
+        if (task.status === 'done') this.say(id, `Completed ${task.label}; the next dependent duties are open.`);
+        return { placed, task: task.id, complete: task.status === 'done' };
+      } catch (error) {
+        if (this.store.state.status === 'running') task.failures++;
+        task.error = error instanceof Error ? error.message : String(error);
+        if (task.failures >= 3 && this.store.state.status === 'running') {
+          task.status = 'todo'; delete task.owner; delete task.assignee;
+          task.retryAt = Date.now() + 10_000;
+          this.say(id, `I released ${task.label} after repeated trouble (${task.error}). Another teammate can retry it shortly.`);
+        }
+        this.store.save('partial-action', { agent: id, task: task.id, placed, error: task.error, retryAt: task.retryAt });
+        throw new Error(`Partial progress ${placed}: ${task.error}`);
+      }
     });
   }
   async loop(id: AgentId) {
@@ -217,7 +235,18 @@ export class Engine {
     let idleDecisions = 0;
     let idleParkingAttempted = false;
     const shared = ['shared/prompts/team.md','shared/minecraft-rules/world.md','shared/house-requirements/house.md'].map(f=>readFileSync(f,'utf8')).join('\n');
-    while (this.store.state.status === 'running' && agent.connected) {
+    while (this.store.state.status === 'running') {
+      if (!agent.connected) {
+        agent.action = 'reconnecting'; this.publish();
+        try {
+          await this.world.connect();
+          if (agent.connected) this.say(id, 'Reconnected. I am rejoining the task board.');
+        } catch (error) {
+          agent.action = `reconnect delayed: ${error instanceof Error ? error.message : String(error)}`; this.publish();
+          await new Promise(resolve=>setTimeout(resolve,3000));
+        }
+        continue;
+      }
       if (!this.needsDecision(id)) {
         if (!idleParkingAttempted) {
           idleParkingAttempted = true;
@@ -232,10 +261,13 @@ export class Engine {
         agent.action = 'thinking'; this.publish();
         const observation = this.observation(id);
         const actionable = observation.yourTask ? `Your current duty is ${observation.yourTask.id}; use ${observation.yourTask.kind === 'supply' ? 'fulfill_supply' : 'build_section'} for it.` : `Current claimable task IDs: ${observation.availableTasks.map(t=>t.id).join(', ') || 'none'}. Historical task IDs may be complete and must not be reclaimed.`;
-        const call = await this.router.decide(id, [{ role:'system', content: readFileSync(`agents/${id}/prompt.md`,'utf8')+'\n'+shared }, ...agent.messages.slice(-4), { role:'user', content: JSON.stringify(observation)+'\n'+actionable }], this.toolsFor(id));
+        const automaticCleanup = observation.total > 0 && observation.done === observation.total;
+        const call = automaticCleanup
+          ? { id:'automatic-cleanup', function:{name:'cleanup_scaffolding',arguments:'{}'} }
+          : await this.router.decide(id, [{ role:'system', content: readFileSync(`agents/${id}/prompt.md`,'utf8')+'\n'+shared }, ...agent.messages.slice(-4), { role:'user', content: JSON.stringify(observation)+'\n'+actionable }], this.toolsFor(id));
         if (this.store.state.status !== 'running') break;
         const name = call.function.name;
-        this.store.save('model-tool-call', { agent: id, call });
+        this.store.save(automaticCleanup ? 'automatic-tool-call' : 'model-tool-call', { agent: id, call });
         agent.messages.push({ role: 'assistant', content: `I chose ${name} with arguments ${call.function.arguments.slice(0,2000)}` });
         if (!Object.hasOwn(schemas, name)) throw new Error('Unknown tool');
         agent.action = name; this.publish();
@@ -244,7 +276,12 @@ export class Engine {
         agent.messages = agent.messages.slice(-4);
         agent.failures = 0;
         idleDecisions = ['observe','inventory','message','remember','move'].includes(name) ? idleDecisions+1 : 0;
-        if (idleDecisions >= 5) { this.store.pause('No construction or coordination progress in five decisions');throw new Error(this.store.state.reason); }
+        if (idleDecisions >= 5) {
+          agent.messages.push({role:'user',content:'You have spent several decisions without advancing a duty. Claim or execute concrete work now, or clearly coordinate a handoff.'});
+          this.store.save('agent-idle-backoff',{id,decisions:idleDecisions});
+          idleDecisions = 0;
+          await new Promise(resolve=>setTimeout(resolve,2000));
+        }
         this.store.save('action-result', { agent: id, name, result }); this.publish();
         if (Object.values(this.store.state.checklist).every(Boolean)) {
           this.store.state.status = 'complete'; this.store.state.reason = 'House verified against actual world blocks and reachable interior';
@@ -259,7 +296,21 @@ export class Engine {
         agent.failures++; agent.action = message;
         agent.messages.push({ role: 'user', content: `Tool failed: ${message}. Choose a bounded recovery action; do not repeat an impossible action.` });
         this.store.save('agent-error', { id, error: message }); this.publish();
-        if (agent.failures >= 3 || this.store.state.status !== 'running') { if (this.store.state.status === 'running') this.store.pause(`${id}: ${message}`); this.world.stop(); await this.world.command('pause').catch(()=>{}); break; }
+        if (this.store.state.status !== 'running') break;
+        if (message === 'Budget exhausted') {
+          this.store.pause('Shared run budget exhausted'); this.world.stop(); await this.world.command('pause').catch(()=>{}); break;
+        }
+        if (agent.failures >= 3) {
+          this.coordinator.release(id);
+          const cleanupPhase = this.store.state.tasks.length > 0 && this.store.state.tasks.every(task=>task.status==='done');
+          if (cleanupPhase) {
+            this.cleanupLeader = (this.cleanupLeader + 1) % IDS.length;
+            this.say(id, `I could not reach the remaining supports (${message}). ${IDS[this.cleanupLeader]} is taking the next cleanup attempt.`);
+          } else this.say(id, `I am backing off after repeated errors (${message}). My teammates can continue and take the released duty.`);
+          agent.failures = 0;
+          agent.action = 'recovering while teammates continue'; this.publish();
+          await new Promise(resolve=>setTimeout(resolve,5000));
+        }
       }
     }
     agent.action = this.store.state.status; this.publish();

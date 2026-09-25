@@ -29,7 +29,8 @@ export class Coordinator {
   }
   available(agent: AgentId) {
     const tasks = this.store.state.tasks;
-    return tasks.filter(task => task.status === 'todo' && (!task.assignee || task.assignee === agent || tasks.some(other => other.owner === task.assignee && other.status === 'claimed')) && task.dependencies.every(id => tasks.find(other => other.id === id)?.status === 'done'));
+    const now = Date.now();
+    return tasks.filter(task => task.status === 'todo' && (!task.retryAt || task.retryAt <= now) && (!task.assignee || task.assignee === agent || tasks.some(other => other.owner === task.assignee && other.status === 'claimed')) && task.dependencies.every(id => tasks.find(other => other.id === id)?.status === 'done'));
   }
   claim(agent: AgentId, id: string, revision: number) {
     const state = this.store.state;
@@ -45,7 +46,7 @@ export class Coordinator {
     const occupied = new Set(state.tasks.filter(t => t.status === 'claimed').flatMap(t => t.blocks.map(key)));
     if (task.blocks.some(p => occupied.has(key(p)))) throw new CoordinationConflict('Construction region is reserved');
     if(task.assignee && task.assignee !== agent)task.assignee=agent;
-    task.owner = agent; task.status = 'claimed'; this.store.save('task-claimed', { agent, id }); return task;
+    task.owner = agent; task.status = 'claimed'; task.failures = 0; delete task.retryAt; delete task.error; this.store.save('task-claimed', { agent, id }); return task;
   }
   delegate(agent: AgentId, id: string, target: AgentId) {
     const task=this.store.state.tasks.find(t=>t.id===id);

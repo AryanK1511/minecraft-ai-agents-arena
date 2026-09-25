@@ -20,6 +20,11 @@ test('majority, stale votes, dependencies, conflicting claims, and disconnect re
     coordinator.release('agent1');
     coordinator.claim('agent2', 'floor-0', 1);
     assert.equal(store.state.tasks.find(t => t.id === 'floor-0')?.owner, 'agent2');
+    const coolingDown = store.state.tasks.find(t => t.id !== 'floor-0' && t.status === 'todo' && t.dependencies.every(id => store.state.tasks.find(other => other.id === id)?.status === 'done'))!;
+    coolingDown.retryAt = Date.now() + 60_000;
+    assert.equal(coordinator.available('agent3').some(t => t.id === coolingDown.id), false);
+    coolingDown.retryAt = Date.now() - 1;
+    assert.equal(coordinator.available('agent3').some(t => t.id === coolingDown.id), true);
     for (const t of store.state.tasks) t.status = 'done';
     const checks = inspect({ blocks: [], revision: 0, paused: true, players: [] }, store.state.blueprint, store.state.tasks);
     assert.equal(checks.floor, false); assert.equal(checks.completeRoof, false); assert.equal(checks.reachableInterior, false);

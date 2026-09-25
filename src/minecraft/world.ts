@@ -22,6 +22,7 @@ export class World {
   private actorQueues = new Map<AgentId, Mutex>();
   private activeActions = new Set<Promise<unknown>>();
   private cleanupQueue = new Mutex();
+  private connecting?: Promise<void>;
   resources = new Survival(this);
   onActivity: (id: AgentId, action: string, detail?: object) => void = () => {};
   async act<T>(id: AgentId, operation: () => Promise<T>): Promise<T> {
@@ -48,6 +49,13 @@ export class World {
   }
   async snapshot(): Promise<Snapshot> { return this.command('snapshot'); }
   async connect() {
+    if (this.connecting) return this.connecting;
+    const attempt = this.connectAll();
+    this.connecting = attempt;
+    try { await attempt; }
+    finally { if (this.connecting === attempt) this.connecting = undefined; }
+  }
+  private async connectAll() {
     for (const id of IDS) {
       const existing = this.bots.get(id);
       if (existing && !existing._client.ended) continue;

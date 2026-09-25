@@ -60,7 +60,8 @@ propose and review a blueprint; two votes approve it. Supply duties cover gather
 and crafting, while construction duties wait for their materials and prerequisites.
 Plans are checked against the island’s finite wood and fuel supply.
 Agents can delegate unclaimed duties, claim their own responsibilities, and send
-messages visible in both Minecraft chat and the dashboard.
+messages visible in both Minecraft chat and the dashboard. Claims and completed
+duties are announced automatically so teammates see work opening up.
 
 Each player has its own action queue. Three gathering, crafting or building jobs
 can run at the same time. Resource-block claims prevent duplicate harvesting;
@@ -68,6 +69,8 @@ shared chest access is serialized. An idle player can take an unclaimed duty
 from an already-busy teammate, while active claims remain protected. The dashboard
 shows actions, inventories,
 gathered/crafted quantities, placements, completed duties and costs.
+Final scaffold cleanup is assigned to one rotating player and runs without a model
+call; repeated path trouble hands it to the next teammate instead of pausing the run.
 
 Completion checks inspect actual floor, walls, windows, roof, lighting, three
 beds, crafting table, chest, both door halves and reachable interior space.
@@ -93,6 +96,10 @@ SQLite stores blueprints, duties, claims, outcomes, messages and usage. Each run
 exports `summary.json`, `world.json` and `messages.md` under `shared/runs`.
 Restarts retain progress and restart paused. Furnaces may finish already-loaded
 inputs while paused, as in normal Minecraft; no new inputs or model calls begin.
+During a running session, one bot disconnecting or repeatedly failing a duty does
+not stop the team. Its claim is released, the bot reconnects or backs off, and the
+other two loops keep working. Only explicit lifecycle controls, verified completion,
+budget exhaustion, and safety-critical billing or delivery uncertainty pause the run.
 
 ## Versions and validation
 
@@ -128,7 +135,8 @@ remain; full-house completion has not been verified. Thirteen automated tests pa
 - Invalid movement packets: retain the pinned tick adapter; do not downgrade Paper.
 - Missing/unavailable model: correct its configuration, then start a new run.
 - A repeated action failure: inspect the visible action, inventory and run events.
-  Partial blocks, gathered materials and cost remain preserved while paused.
+  Partial blocks, gathered materials and cost remain preserved; the duty cools down
+  briefly and is then available to another teammate without pausing the whole run.
 - Unknown billing: inspect the reservation/usage events and OpenRouter activity;
   keep the run paused until the actual charge can be reconciled.
 - Bots disconnect during development: fixture probes deliberately quit when done;
