@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Store } from '../src/core/store.js';
-import { Coordinator } from '../src/core/coordinator.js';
+import { Coordinator, CoordinationConflict } from '../src/core/coordinator.js';
 import { inspect } from '../src/core/completion.js';
 test('majority, stale votes, dependencies, conflicting claims, and disconnect release', () => {
   const dir = mkdtempSync(join(tmpdir(), 'arena-coordination-')), store = new Store(dir), coordinator = new Coordinator(store);
@@ -17,6 +17,7 @@ test('majority, stale votes, dependencies, conflicting claims, and disconnect re
     for (const task of store.state.tasks) if (task.kind==='supply') task.status='done';
     coordinator.claim('agent1', 'floor-0', 1);
     assert.throws(() => coordinator.claim('agent2', 'floor-0', 1), /unavailable/);
+    assert.throws(() => coordinator.delegate('agent2', 'floor-0', 'agent3'), CoordinationConflict);
     coordinator.release('agent1');
     coordinator.claim('agent2', 'floor-0', 1);
     assert.equal(store.state.tasks.find(t => t.id === 'floor-0')?.owner, 'agent2');

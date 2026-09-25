@@ -123,6 +123,16 @@ export class World {
     const { x, y, z } = bot.entity.position;
     return { position: { x, y, z } };
   }
+  async moveToAny(id: AgentId, positions: Position[]) {
+    this.check();
+    if (!positions.length || positions.some(p => ![p.x,p.y,p.z].every(Number.isInteger))) throw new Error('At least one integer approach position is required');
+    const bot = this.bot(id);
+    const goalsForPositions = positions.map(p => new goals.GoalBlock(p.x,p.y,p.z));
+    try { await this.navigate(id,new goals.GoalCompositeAny(goalsForPositions)); }
+    finally { bot.pathfinder.setGoal(null); }
+    const {x,y,z}=bot.entity.position;
+    return {position:{x,y,z}};
+  }
   async transfer(id: AgentId, name: string, count: number, deposit = false) {
     return this.resources.transfer(id, name, count, deposit);
   }
@@ -143,7 +153,7 @@ export class World {
       if (placement.facing && bot.blockAt(target)?.getProperties().facing !== placement.facing) throw new Error('Existing block has incorrect orientation; remove it before retrying');
       return { alreadyPresent: true };
     }
-    if (['dirt', 'scaffolding'].includes(bot.blockAt(target)?.name ?? '')) await this.remove(id, placement);
+    if (['dirt', 'grass_block', 'scaffolding'].includes(bot.blockAt(target)?.name ?? '')) await this.remove(id, placement);
     if (bot.blockAt(target)?.name !== 'air') throw new Error(`Placement occupied at ${target}`);
     const item = bot.inventory.items().find(i => i.name === placement.name);
     if (!item) throw new Error(`Missing inventory: ${placement.name}`);
@@ -186,14 +196,17 @@ export class World {
     for (let attempt = 0; attempt < 3; attempt++) {
       await bot.equip(item, 'hand');
       await bot.waitForTicks(3);
+      const reference = bot.blockAt(node.ref)!;
+      const sneak = ['crafting_table','chest','furnace'].includes(reference.name);
       try {
+        if (sneak) { bot.setControlState('sneak',true); await bot.waitForTicks(2); }
         if (placement.facing) {
           const yaw = { north: 0, south: Math.PI, east: -Math.PI / 2, west: Math.PI / 2 }[placement.facing];
           await bot.look(yaw, 0, true);
         } else await bot.lookAt(node.ref.offset(0.5, 0.5, 0.5).minus(node.face.scaled(0.5)), true);
         // The bridge must deliver the new look before the interaction tick.
         await bot.waitForTicks(3);
-        await this.deadline((bot as Bot & { _placeBlockWithOptions(block: NonNullable<ReturnType<Bot['blockAt']>>, face: Vec3, options: object): Promise<void> })._placeBlockWithOptions(bot.blockAt(node.ref)!, node.face.scaled(-1), { forceLook: 'ignore', swingArm: 'right' }));
+        await this.deadline((bot as Bot & { _placeBlockWithOptions(block: NonNullable<ReturnType<Bot['blockAt']>>, face: Vec3, options: object): Promise<void> })._placeBlockWithOptions(reference, node.face.scaled(-1), { forceLook: 'ignore', swingArm: 'right' }));
       } catch (error) {
         await bot.waitForTicks(5);
         if (bot.blockAt(target)?.name === placement.name) break;
@@ -204,6 +217,8 @@ export class World {
         node = actualFace();
         if (!node) throw new Error(`No alternate placement face at ${target}`);
         continue;
+      } finally {
+        if (sneak) bot.setControlState('sneak',false);
       }
       break;
     }
@@ -221,7 +236,7 @@ export class World {
     this.check();
     const block = bot.blockAt(target);
     if (!block || block.name === 'air') return;
-    const suffix = block.name === 'dirt' ? '_shovel' : block.name.includes('stone') ? '_pickaxe' : '_axe';
+    const suffix = ['dirt','grass_block'].includes(block.name) ? '_shovel' : block.name.includes('stone') ? '_pickaxe' : '_axe';
     const tool = bot.inventory.items().find(i => i.name.endsWith(suffix));
     if (tool) await bot.equip(tool, 'hand');
     await this.deadline(bot.dig(block)); await bot.waitForTicks(3);
@@ -230,9 +245,26 @@ export class World {
   async cleanup(id: AgentId) {
     return this.cleanupQueue.run(() => this.cleanupSupports(id));
   }
+  async clearAccess(id: AgentId) {
+    return this.cleanupQueue.run(async()=>{
+      const bot=this.bot(id);
+      const supports:Vec3[]=[];
+      for(let z=6;z>=4;z--)for(let y=67;y>=64;y--)for(let x=-1;x<=1;x++) {
+        const position=new Vec3(x,y,z),name=bot.blockAt(position)?.name;
+        if(name==='dirt'||name==='grass_block'||name==='scaffolding')supports.push(position);
+      }
+      let removed=0;
+      for(const position of supports) {
+        this.check();
+        if(!['dirt','grass_block','scaffolding'].includes(bot.blockAt(position)?.name??''))continue;
+        await this.remove(id,position);removed++;
+      }
+      return {removed};
+    });
+  }
   private async cleanupSupports(id: AgentId) {
     this.check();
-    const blocks = (await this.snapshot()).blocks.filter(([, , , state]) => state.startsWith('minecraft:dirt') || state.startsWith('minecraft:scaffolding')).sort((a,b)=>b[1]-a[1]);
+    const blocks = (await this.snapshot()).blocks.filter(([, y, , state]) => y >= 64 && (state.startsWith('minecraft:dirt') || state.startsWith('minecraft:grass_block') || state.startsWith('minecraft:scaffolding'))).sort((a,b)=>b[1]-a[1]);
     const bot = this.bot(id);
     const movements = bot.pathfinder.movements;
     const previousTower = movements.allow1by1towers;

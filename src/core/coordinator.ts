@@ -50,8 +50,8 @@ export class Coordinator {
   }
   delegate(agent: AgentId, id: string, target: AgentId) {
     const task=this.store.state.tasks.find(t=>t.id===id);
-    if(!task||task.status!=='todo')throw new Error('Only unclaimed duties can be delegated');
-    if(task.assignee===target)throw new Error(`Task already delegated to ${target}; claim it or choose another duty`);
+    if(!task||task.status!=='todo')throw new CoordinationConflict('Only unclaimed duties can be delegated');
+    if(task.assignee===target)throw new CoordinationConflict(`Task already delegated to ${target}; claim it or choose another duty`);
     task.assignee=target;this.store.save('task-delegated',{agent,id,target});return task;
   }
   release(agent: AgentId, retainDuty = false) { for (const task of this.store.state.tasks) if (task.owner === agent && task.status === 'claimed') { task.status = 'todo'; delete task.owner; if(retainDuty)task.assignee=agent;else delete task.assignee; } this.store.save('claims-released', { agent }); }

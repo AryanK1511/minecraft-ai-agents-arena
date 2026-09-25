@@ -209,7 +209,9 @@ export class Survival {
       await this.sharedChest(id);
       const bot=this.world.bot(id), item=bot.registry.itemsByName[name];
       if(!item)throw new Error('Unknown transfer item');
-      await this.world.move(id,{x:0,y:64,z:7});
+      const approaches=[new Vec3(0,64,7),new Vec3(-1,64,8),new Vec3(1,64,8),new Vec3(-1,64,7),new Vec3(1,64,7)].filter(p=>
+        bot.blockAt(p)?.name==='air' && bot.blockAt(p.offset(0,1,0))?.name==='air' && bot.blockAt(p.offset(0,-1,0))?.boundingBox==='block');
+      await this.world.moveToAny(id,approaches);
       const chest=await this.world.deadline(bot.openContainer(bot.blockAt(this.chestPosition)!));
       try {
         this.world.check();

@@ -36,6 +36,11 @@ the world and run progress. Restart with
 exactly two services: Minecraft and the TypeScript application. Only loopback
 ports 25565 and 3000 are published. RCON is internal.
 
+Run `just reset` to stop and remove the containers, delete the Minecraft world,
+and clear all local run state, including recorded cost, tasks, messages and run
+exports. The next `just arena` starts from a completely fresh world and run.
+This does not alter charges already recorded by OpenRouter.
+
 ## The biome and survival rules
 
 The 32×32 island contains an oak grove, meadow and flowers, sandy pond, exposed

@@ -297,6 +297,17 @@ export class Engine {
         agent.messages.push({ role: 'user', content: `Tool failed: ${message}. Choose a bounded recovery action; do not repeat an impossible action.` });
         this.store.save('agent-error', { id, error: message }); this.publish();
         if (this.store.state.status !== 'running') break;
+        if (agent.failures === 1 && (message.includes('No path to the goal') || message.includes('Navigation ended before reaching'))) {
+          try {
+            const result=await this.world.act(id,()=>this.world.clearAccess(id));
+            if(result.removed>0) {
+              this.say(id,`Cleared ${result.removed} temporary supports from our shared access route; retrying with the entrance open.`);
+              agent.failures=0;continue;
+            }
+          } catch(recoveryError) {
+            this.store.save('access-recovery-delayed',{id,error:String(recoveryError)});
+          }
+        }
         if (message === 'Budget exhausted') {
           this.store.pause('Shared run budget exhausted'); this.world.stop(); await this.world.command('pause').catch(()=>{}); break;
         }
