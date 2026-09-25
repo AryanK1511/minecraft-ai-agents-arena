@@ -15,7 +15,7 @@ test('completion requires actual roof, both bed and door halves, access, and no 
   const roof = tasks.find(t=>t.id.startsWith('roof'))!.blocks[0];
   assert.equal(inspect({...snapshot,blocks:blocks.filter(([x,y,z])=>x!==roof.x||y!==roof.y||z!==roof.z)},blueprint,tasks).completeRoof,false);
   assert.equal(inspect({...snapshot,blocks:blocks.filter(([,y,z,s])=>!(s.includes('oak_door')&&y===66&&z===door.z))},blueprint,tasks).accessibleDoor,false);
-  assert.equal(inspect({...snapshot,blocks:blocks.filter(([, , ,s])=>!s.includes('red_bed')||!s.includes('part=head'))},blueprint,tasks).threeBeds,false);
+  assert.equal(inspect({...snapshot,blocks:blocks.filter(([, , ,s])=>!s.includes('white_bed')||!s.includes('part=head'))},blueprint,tasks).threeBeds,false);
   assert.equal(inspect({...snapshot,blocks:[...blocks,[0,65,2,'minecraft:dirt']]},blueprint,tasks).scaffoldCleanup,false);
   assert.equal(inspect({...snapshot,blocks:[...blocks,[0,65,2,'minecraft:stone'],[0,66,2,'minecraft:stone']]},blueprint,tasks).reachableInterior,false);
 });

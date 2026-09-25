@@ -1,3 +1,15 @@
+# Current requirements amendment — 25 September 2026
+
+The user explicitly revised the original plan:
+
+- Replace the artificial stocked platform with a compact, beautiful natural biome containing trees, flowers, water, terrain, and all resources needed for the house.
+- Start agents empty-handed. No pre-stocked chests or supplied tools. They gather, mine, craft, smelt, and obtain wool through survival actions.
+- Keep players within a small area visible from the spectator overview.
+- Run physical agent actions concurrently. Coordinate distinct duties, dependencies, resource/block claims, and a visible shared chat log. Serialize only genuinely shared resources.
+- Preserve the original run archive when migrating to this world. All remaining original requirements below still apply where compatible.
+
+---
+
 # Minecraft AI House-Building Arena
 
 ## Summary
@@ -38,11 +50,11 @@ Each agent folder contains its model configuration and individual prompt. Shared
 
 Use these configurable starting models:
 
-| Player | OpenRouter model |
-|---|---|
-| agent1 | `qwen/qwen3-30b-a3b-instruct-2507` |
+| Player | OpenRouter model                           |
+| ------ | ------------------------------------------ |
+| agent1 | `qwen/qwen3-30b-a3b-instruct-2507`         |
 | agent2 | `mistralai/mistral-small-3.2-24b-instruct` |
-| agent3 | `meta-llama/llama-3.3-70b-instruct` |
+| agent3 | `meta-llama/llama-3.3-70b-instruct`        |
 
 These are inexpensive candidates from three model families, currently listed by [Qwen](https://openrouter.ai/qwen/qwen3-30b-a3b-instruct-2507), [Mistral](https://openrouter.ai/mistralai/mistral-small-3.2-24b-instruct), and [Meta](https://openrouter.ai/meta-llama/llama-3.3-70b-instruct) on OpenRouter. Validate availability, tool support, and pricing before starting; unavailable models produce a visible configuration error.
 

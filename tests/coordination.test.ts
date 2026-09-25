@@ -14,6 +14,7 @@ test('majority, stale votes, dependencies, conflicting claims, and disconnect re
     assert.throws(() => coordinator.claim('agent1', 'floor-0', 1), /unapproved/);
     coordinator.vote('agent2', 1);
     assert.throws(() => coordinator.claim('agent1', 'roof-0', 1), /dependencies/);
+    for (const task of store.state.tasks) if (task.kind==='supply') task.status='done';
     coordinator.claim('agent1', 'floor-0', 1);
     assert.throws(() => coordinator.claim('agent2', 'floor-0', 1), /unavailable/);
     coordinator.release('agent1');

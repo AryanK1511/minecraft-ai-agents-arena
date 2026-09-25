@@ -1,0 +1,96 @@
+{
+  "date": "2026-09-25",
+  "apiRequests": 0,
+  "transfers": [
+    {
+      "at": "2026-09-25T14:22:36.229Z",
+      "id": "agent1",
+      "action": "Deposited 4 oak_planks",
+      "kind": "deposit",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:22:40.042Z",
+      "id": "agent2",
+      "action": "Deposited 4 cobblestone",
+      "kind": "deposit",
+      "name": "cobblestone",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:22:41.804Z",
+      "id": "agent3",
+      "action": "Deposited 2 glass",
+      "kind": "deposit",
+      "name": "glass",
+      "count": 2
+    },
+    {
+      "at": "2026-09-25T14:22:42.430Z",
+      "id": "agent3",
+      "action": "Withdrew 1 glass",
+      "kind": "withdraw",
+      "name": "glass",
+      "count": 1
+    }
+  ],
+  "bedCrafting": {
+    "players": [
+      {
+        "mode": "SPECTATOR",
+        "inventory": {},
+        "x": 12.699793631013591,
+        "y": 68.11656923691613,
+        "z": 7.845077504716046,
+        "name": "aryank1511"
+      },
+      {
+        "mode": "SURVIVAL",
+        "inventory": {},
+        "x": -0.6759198003988187,
+        "y": 64,
+        "z": 7.462037245680969,
+        "name": "agent1"
+      },
+      {
+        "mode": "SURVIVAL",
+        "inventory": {
+          "cobblestone": 1,
+          "dandelion": 1,
+          "dirt": 1,
+          "oak_log": 3,
+          "oak_planks": 3,
+          "raw_iron": 1,
+          "stick": 2,
+          "wooden_pickaxe": 1
+        },
+        "x": 1.442525611658929,
+        "y": 64,
+        "z": 7.324130488549909,
+        "name": "agent2"
+      },
+      {
+        "mode": "SURVIVAL",
+        "inventory": {
+          "coal": 1,
+          "dirt": 2,
+          "glass": 1,
+          "shears": 1,
+          "stone_pickaxe": 1,
+          "white_bed": 1,
+          "wooden_pickaxe": 1
+        },
+        "x": 3.5791860129978152,
+        "y": 64,
+        "z": 9.5,
+        "name": "agent3"
+      }
+    ],
+    "paused": false,
+    "revision": 62,
+    "blocks": [],
+    "environment": "natural-biome-v1"
+  },
+  "note": "Continuation of empty-start natural fixture. Team crafted storage; no items supplied."
+}

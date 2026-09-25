@@ -4,6 +4,9 @@ cd "$(dirname "$0")/.."
 mkdir -p .runtime/artifacts .runtime/plugins
 fetch() {
   url="$1" destination="$2" expected="$3"
+  if [ -f "$destination" ] && [ "$(shasum -a 256 "$destination" | cut -d ' ' -f 1)" = "$expected" ]; then
+    return
+  fi
   curl --fail --location --retry 2 "$url" -o "$destination"
   actual=$(shasum -a 256 "$destination" | cut -d ' ' -f 1)
   test "$actual" = "$expected" || { rm "$destination"; echo 'Artifact checksum mismatch' >&2; exit 1; }

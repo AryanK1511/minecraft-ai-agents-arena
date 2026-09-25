@@ -1,0 +1,14 @@
+{
+  "at": "2026-09-25T14:58:21.519Z",
+  "run": "ca8adda0-2d33-484b-a4bd-953e616f82ed",
+  "generationId": "gen-1790348123-gULJfLsS4HwbvzxOxcmo",
+  "reservation": "3653d375-31de-47a3-9b9d-09b9497871d9",
+  "generationStatus": 404,
+  "keyStatus": 200,
+  "keyUsage": 0.210467115,
+  "previousKeyUsage": 0.210467115,
+  "settledLedgerTotal": 0.210467248,
+  "reportedResponseTotal": 0.2104671800500001,
+  "additionalObservedCharge": 0,
+  "basis": "Stable aggregate usage; generation metadata remained unavailable."
+}

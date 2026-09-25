@@ -1,0 +1,721 @@
+{
+  "run": "ca8adda0-2d33-484b-a4bd-953e616f82ed",
+  "description": "Interleaved survival work by all three actual OpenRouter agents in the fresh empty-start biome.",
+  "events": [
+    {
+      "at": "2026-09-25T14:28:01.765Z",
+      "agent": "agent3",
+      "action": "Gathered sand",
+      "kind": "gathered",
+      "name": "sand",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:02.050Z",
+      "agent": "agent3",
+      "action": "Gathering sand · 4/8",
+      "kind": "gather",
+      "name": "sand",
+      "target": {
+        "x": 13,
+        "y": 63,
+        "z": 13
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:02.410Z",
+      "agent": "agent2",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:02.416Z",
+      "agent": "agent2",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:02.974Z",
+      "agent": "agent2",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:03.181Z",
+      "agent": "agent2",
+      "action": "Gathering oak log · 0/1",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": -2,
+        "y": 64,
+        "z": -8
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:05.703Z",
+      "agent": "agent3",
+      "action": "Gathered sand",
+      "kind": "gathered",
+      "name": "sand",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:05.992Z",
+      "agent": "agent3",
+      "action": "Gathering sand · 5/8",
+      "kind": "gather",
+      "name": "sand",
+      "target": {
+        "x": 13,
+        "y": 63,
+        "z": 12
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:06.148Z",
+      "agent": "agent1",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:06.426Z",
+      "agent": "agent1",
+      "action": "Gathering oak log · 3/10",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": -13,
+        "y": 65,
+        "z": 2
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:08.806Z",
+      "agent": "agent3",
+      "action": "Gathered sand",
+      "kind": "gathered",
+      "name": "sand",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:09.118Z",
+      "agent": "agent3",
+      "action": "Gathering sand · 6/8",
+      "kind": "gather",
+      "name": "sand",
+      "target": {
+        "x": 14,
+        "y": 63,
+        "z": 12
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:10.212Z",
+      "agent": "agent2",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:10.216Z",
+      "agent": "agent2",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:10.784Z",
+      "agent": "agent2",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:11.033Z",
+      "agent": "agent2",
+      "action": "Gathering oak log · 0/1",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": 3,
+        "y": 64,
+        "z": -8
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:11.725Z",
+      "agent": "agent3",
+      "action": "Gathered sand",
+      "kind": "gathered",
+      "name": "sand",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:12.017Z",
+      "agent": "agent3",
+      "action": "Gathering sand · 7/8",
+      "kind": "gather",
+      "name": "sand",
+      "target": {
+        "x": 14,
+        "y": 63,
+        "z": 11
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:13.325Z",
+      "agent": "agent1",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:13.573Z",
+      "agent": "agent1",
+      "action": "Gathering oak log · 4/10",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": -9,
+        "y": 65,
+        "z": 3
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:15.501Z",
+      "agent": "agent3",
+      "action": "Gathered sand",
+      "kind": "gathered",
+      "name": "sand",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:16.369Z",
+      "agent": "agent3",
+      "action": "Gathering oak log · 0/1",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": 5,
+        "y": 64,
+        "z": 14
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:17.878Z",
+      "agent": "agent2",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:17.882Z",
+      "agent": "agent2",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:18.450Z",
+      "agent": "agent2",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:18.672Z",
+      "agent": "agent2",
+      "action": "Gathering oak log · 0/1",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": 0,
+        "y": 65,
+        "z": -12
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:22.465Z",
+      "agent": "agent1",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 2
+    },
+    {
+      "at": "2026-09-25T14:28:22.698Z",
+      "agent": "agent1",
+      "action": "Gathering oak log · 6/10",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": -13,
+        "y": 65,
+        "z": -3
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:24.624Z",
+      "agent": "agent2",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:24.628Z",
+      "agent": "agent2",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:25.197Z",
+      "agent": "agent2",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:25.417Z",
+      "agent": "agent2",
+      "action": "Gathering oak log · 0/1",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": 5,
+        "y": 64,
+        "z": -12
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:27.568Z",
+      "agent": "agent3",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 2
+    },
+    {
+      "at": "2026-09-25T14:28:27.573Z",
+      "agent": "agent3",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:28.089Z",
+      "agent": "agent3",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:28.095Z",
+      "agent": "agent3",
+      "action": "Crafting crafting table",
+      "kind": "craft-start",
+      "name": "crafting_table"
+    },
+    {
+      "at": "2026-09-25T14:28:29.126Z",
+      "agent": "agent3",
+      "action": "Crafted crafting_table",
+      "kind": "crafted",
+      "name": "crafting_table",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:30.374Z",
+      "agent": "agent3",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:30.526Z",
+      "agent": "agent1",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:30.765Z",
+      "agent": "agent1",
+      "action": "Gathering oak log · 7/10",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": -13,
+        "y": 64,
+        "z": 7
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:31.135Z",
+      "agent": "agent3",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:31.141Z",
+      "agent": "agent3",
+      "action": "Crafting stick",
+      "kind": "craft-start",
+      "name": "stick"
+    },
+    {
+      "at": "2026-09-25T14:28:31.864Z",
+      "agent": "agent3",
+      "action": "Crafted stick",
+      "kind": "crafted",
+      "name": "stick",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:32.061Z",
+      "agent": "agent3",
+      "action": "Gathering oak log · 0/1",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": 10,
+        "y": 64,
+        "z": 13
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:35.079Z",
+      "agent": "agent2",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 2
+    },
+    {
+      "at": "2026-09-25T14:28:35.084Z",
+      "agent": "agent2",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:35.655Z",
+      "agent": "agent2",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:35.663Z",
+      "agent": "agent2",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:36.216Z",
+      "agent": "agent2",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:36.451Z",
+      "agent": "agent2",
+      "action": "Gathering oak log · 0/1",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": -5,
+        "y": 64,
+        "z": -12
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:37.176Z",
+      "agent": "agent1",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:37.415Z",
+      "agent": "agent1",
+      "action": "Gathering oak log · 8/10",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": -9,
+        "y": 64,
+        "z": 7
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:41.730Z",
+      "agent": "agent3",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 2
+    },
+    {
+      "at": "2026-09-25T14:28:41.734Z",
+      "agent": "agent3",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:42.296Z",
+      "agent": "agent3",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:43.681Z",
+      "agent": "agent3",
+      "action": "Crafting wooden pickaxe",
+      "kind": "craft-start",
+      "name": "wooden_pickaxe"
+    },
+    {
+      "at": "2026-09-25T14:28:43.846Z",
+      "agent": "agent2",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:43.851Z",
+      "agent": "agent2",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:43.855Z",
+      "agent": "agent1",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:44.085Z",
+      "agent": "agent1",
+      "action": "Gathering oak log · 9/10",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": -6,
+        "y": 64,
+        "z": -8
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:44.553Z",
+      "agent": "agent2",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:44.783Z",
+      "agent": "agent2",
+      "action": "Gathering oak log · 0/1",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": -2,
+        "y": 65,
+        "z": -8
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:45.457Z",
+      "agent": "agent3",
+      "action": "Crafted wooden_pickaxe",
+      "kind": "crafted",
+      "name": "wooden_pickaxe",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:45.893Z",
+      "agent": "agent3",
+      "action": "Gathering cobblestone · 0/8",
+      "kind": "gather",
+      "name": "cobblestone",
+      "target": {
+        "x": 8,
+        "y": 64,
+        "z": 5
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:50.796Z",
+      "agent": "agent3",
+      "action": "Gathered cobblestone",
+      "kind": "gathered",
+      "name": "cobblestone",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:51.234Z",
+      "agent": "agent3",
+      "action": "Gathering cobblestone · 1/8",
+      "kind": "gather",
+      "name": "cobblestone",
+      "target": {
+        "x": 8,
+        "y": 63,
+        "z": 5
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:54.674Z",
+      "agent": "agent3",
+      "action": "Gathered cobblestone",
+      "kind": "gathered",
+      "name": "cobblestone",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:55.111Z",
+      "agent": "agent3",
+      "action": "Gathering cobblestone · 2/8",
+      "kind": "gather",
+      "name": "cobblestone",
+      "target": {
+        "x": 9,
+        "y": 63,
+        "z": 5
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:57.268Z",
+      "agent": "agent2",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:57.272Z",
+      "agent": "agent2",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:57.689Z",
+      "agent": "agent1",
+      "action": "Gathered oak log",
+      "kind": "gathered",
+      "name": "oak_log",
+      "count": 2
+    },
+    {
+      "at": "2026-09-25T14:28:57.834Z",
+      "agent": "agent2",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:58.071Z",
+      "agent": "agent2",
+      "action": "Gathering oak log · 0/1",
+      "kind": "gather",
+      "name": "oak_log",
+      "target": {
+        "x": 7,
+        "y": 64,
+        "z": -9
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:58.075Z",
+      "agent": "agent3",
+      "action": "Gathered cobblestone",
+      "kind": "gathered",
+      "name": "cobblestone",
+      "count": 1
+    },
+    {
+      "at": "2026-09-25T14:28:58.475Z",
+      "agent": "agent3",
+      "action": "Gathering cobblestone · 3/8",
+      "kind": "gather",
+      "name": "cobblestone",
+      "target": {
+        "x": 8,
+        "y": 63,
+        "z": 4
+      }
+    },
+    {
+      "at": "2026-09-25T14:28:58.825Z",
+      "agent": "agent1",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:59.357Z",
+      "agent": "agent1",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:59.364Z",
+      "agent": "agent1",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    },
+    {
+      "at": "2026-09-25T14:28:59.918Z",
+      "agent": "agent1",
+      "action": "Crafted oak_planks",
+      "kind": "crafted",
+      "name": "oak_planks",
+      "count": 4
+    },
+    {
+      "at": "2026-09-25T14:28:59.922Z",
+      "agent": "agent1",
+      "action": "Crafting oak planks",
+      "kind": "craft-start",
+      "name": "oak_planks"
+    }
+  ]
+}

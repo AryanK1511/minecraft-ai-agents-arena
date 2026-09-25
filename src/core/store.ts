@@ -16,12 +16,12 @@ export class Store {
     this.state.status = 'paused';
     this.state.reason = Object.keys(this.state.reservations).length ? 'Unresolved request reservations from previous process; reconcile billing before resume.' : 'Restarted paused; world reconciliation required.';
     for (const id of IDS) { this.state.agents[id].connected = false; this.state.agents[id].action = 'paused'; }
-    for (const task of this.state.tasks) if (task.status === 'claimed') { task.status = 'todo'; delete task.owner; }
+    for (const task of this.state.tasks) if (task.status === 'claimed') { task.status = 'todo'; task.assignee=task.owner; delete task.owner; }
     this.save('startup');
   }
   fresh(): RunState {
-    const agents = Object.fromEntries(IDS.map(id => [id, { ...JSON.parse(readFileSync(`agents/${id}/config.json`, 'utf8')), connected: false, action: 'paused', memory: '', spent: 0, failures: 0, contributions: 0, inventory: {}, messages: [] }])) as RunState['agents'];
-    return { id: randomUUID(), status: 'paused', reason: 'Ready; press Start', limit: this.budget, spent: 0, reservations: {}, tasks: [], agents, messages: [], checklist: {}, revision: 0 };
+    const agents = Object.fromEntries(IDS.map(id => [id, { ...JSON.parse(readFileSync(`agents/${id}/config.json`, 'utf8')), connected: false, action: 'paused', memory: '', spent: 0, failures: 0, contributions: 0, gathered: 0, crafted: 0, inventory: {}, messages: [] }])) as RunState['agents'];
+    return { environment:'natural-biome-v1', id: randomUUID(), status: 'paused', reason: 'Ready; press Start', limit: this.budget, spent: 0, reservations: {}, tasks: [], agents, messages: [], checklist: {}, revision: 0 };
   }
   save(kind: string, detail: unknown = {}) {
     this.state.revision++;

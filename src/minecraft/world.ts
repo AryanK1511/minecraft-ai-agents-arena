@@ -1,7 +1,10 @@
+import { readSnapshot, parseReply } from './snapshot.js';
+import { ReachBlockGoal } from './navigation.js';
 import mineflayer, { type Bot } from 'mineflayer';
 import pathfinding from 'mineflayer-pathfinder';
 import { Rcon } from 'rcon-client';
 import { Vec3 } from 'vec3';
+import { Survival } from './resources.js';
 import { installProtocolBridge } from './protocol-bridge.mjs';
 import { IDS, type AgentId, type Placement, type Position, type Snapshot } from '../core/types.js';
 const { pathfinder, Movements, goals } = pathfinding;
@@ -16,7 +19,19 @@ class Mutex {
 }
 export class World {
   bots = new Map<AgentId, Bot>();
-  actions = new Mutex();
+  private actorQueues = new Map<AgentId, Mutex>();
+  private activeActions = new Set<Promise<unknown>>();
+  private cleanupQueue = new Mutex();
+  resources = new Survival(this);
+  onActivity: (id: AgentId, action: string, detail?: object) => void = () => {};
+  async act<T>(id: AgentId, operation: () => Promise<T>): Promise<T> {
+    let queue = this.actorQueues.get(id);
+    if (!queue) { queue = new Mutex(); this.actorQueues.set(id, queue); }
+    const action = queue.run(async () => { this.check(); return operation(); });
+    this.activeActions.add(action);
+    try { return await action; } finally { this.activeActions.delete(action); }
+  }
+  async drain() { await Promise.allSettled([...this.activeActions]); }
   chests = new Mutex();
   admin = new Mutex();
   paused = true;
@@ -24,7 +39,10 @@ export class World {
   async command(action: 'pause' | 'resume' | 'reset' | 'overview' | 'snapshot' | 'status'): Promise<any> {
     return this.admin.run(async () => {
       const rcon = await Rcon.connect({ host: this.host, port: 25575, password: this.rconPassword });
-      try { return JSON.parse((await rcon.send(`arena ${action}`)).replace(/\x1b\[[0-9;]*m/g, '').trim()); }
+      try {
+        const response = parseReply(await rcon.send(`arena ${action}`));
+        return action === 'snapshot' ? await readSnapshot(response, command => rcon.send(command)) : response;
+      }
       finally { await rcon.end(); }
     });
   }
@@ -41,11 +59,20 @@ export class World {
       await this.deadline(new Promise<void>((resolve, reject) => { bot.once('spawn', resolve); bot.once('error', reject); bot.once('kicked', reason => reject(new Error(String(reason)))); }), 30000);
       await this.deadline(bot.waitForChunksToLoad(), 30000);
       await bot.waitForTicks(10);
+      // Leave a 0.001-block collision margin: Paper rejects exact edge contact
+      // from the physics library's rounded 0.3 half-width during step-up moves.
+      (bot.physics as typeof bot.physics & { playerHalfWidth: number }).playerHalfWidth = 0.301;
       bot.loadPlugin(pathfinder);
       const movements = new ArenaMovements(bot);
       movements.allowParkour = false;
       movements.allowSprinting = false;
-      movements.canDig = false;
+      movements.maxDropDown = 8;
+      movements.canDig = true;
+      movements.exclusionAreasBreak.push(block=> {
+        const p=block.position;
+        const natural=['oak_log','oak_leaves','stone','coal_ore','iron_ore','sand','dirt','grass_block','short_grass','dandelion','poppy','cornflower'].includes(block.name);
+        return natural && Math.abs(p.x)<=14 && Math.abs(p.z)<=14 && p.y>=60 && p.y<=74 && !(Math.abs(p.x)<=6&&Math.abs(p.z)<=6) && !this.resources.claimedByOther(id,p) ? 0 : 100;
+      });
       movements.allow1by1towers = true;
       movements.allowFreeMotion = false;
       movements.scafoldingBlocks = [bot.registry.itemsByName.dirt.id];
@@ -55,7 +82,11 @@ export class World {
       await new Promise(resolve => setTimeout(resolve, 4500));
     }
   }
-  inventory(id: AgentId) { return Object.fromEntries(this.bot(id).inventory.items().map(item => [item.name, this.bot(id).inventory.items().filter(i => i.name === item.name).reduce((sum, i) => sum + i.count, 0)])); }
+  inventory(id: AgentId) {
+    const bot=this.bot(id), counts:Record<string,number>={};
+    for(const item of (bot.currentWindow??bot.inventory).items()) counts[item.name]=(counts[item.name]??0)+item.count;
+    return counts;
+  }
   bot(id: AgentId) { const bot = this.bots.get(id); if (!bot || bot._client.ended) throw new Error(`${id} is disconnected`); return bot; }
   check() { if (this.paused) throw new Error('Paused at safe block boundary'); }
   async deadline<T>(promise: Promise<T>, ms = 30000): Promise<T> {
@@ -63,52 +94,42 @@ export class World {
     try { return await Promise.race([promise, new Promise<T>((_, reject) => { timer = setTimeout(() => reject(new Error('Action timed out')), ms); })]); }
     finally { clearTimeout(timer!); }
   }
+  async navigate(id: AgentId, goal: Parameters<Bot['pathfinder']['goto']>[0], timeout = 20000) {
+    this.check();const bot=this.bot(id);
+    try {
+      await this.deadline(bot.pathfinder.goto(goal),timeout);
+      await bot.waitForTicks(3);
+      // The pinned pathfinder resolves an empty no-path result as success.
+      // Never let that start a remote dig, craft or container interaction.
+      if(!goal.isEnd(bot.entity.position.floored() as unknown as Parameters<typeof goal.isEnd>[0]))throw new Error(`Navigation ended before reaching ${goal.constructor.name} from ${bot.entity.position}`);
+      this.check();
+    } finally {bot.pathfinder.setGoal(null);}
+  }
   async move(id: AgentId, p: Position) {
     this.check();
-    if (![p.x, p.y, p.z].every(Number.isFinite) || p.x < -14 || p.x > 13 || p.z < -14 || p.z > 13 || p.y < 64 || p.y > 72) throw new Error('Movement outside arena');
+    if (![p.x, p.y, p.z].every(Number.isFinite) || p.x < -14 || p.x > 13 || p.z < -14 || p.z > 13 || p.y < 60 || p.y > 74) throw new Error('Movement outside arena');
     const bot = this.bot(id);
-    try { await this.deadline(bot.pathfinder.goto(new goals.GoalNear(p.x, p.y, p.z, 1)), 20000); }
+    try { await this.navigate(id,new goals.GoalNear(p.x,p.y,p.z,1)); }
     finally { bot.pathfinder.setGoal(null); }
     this.check();
+    const { x, y, z } = bot.entity.position;
+    return { position: { x, y, z } };
   }
   async transfer(id: AgentId, name: string, count: number, deposit = false) {
-    return this.chests.run(async () => {
-      this.check();
-      const bot = this.bot(id), item = bot.registry.itemsByName[name];
-      if (!item || !Number.isInteger(count) || count < 1 || count > 256) throw new Error('Invalid chest transfer');
-      let remaining = count;
-      const shelves: Record<string, number> = { oak_planks: -5, oak_log: -5, cobblestone: -5, stone_bricks: -5, oak_stairs: -1, oak_slab: -1, glass: -1, glass_pane: -1, dirt: 3, scaffolding: 3, ladder: 3, torch: 3, lantern: 3, oak_door: 7, red_bed: 7, blue_bed: 7, white_bed: 7, crafting_table: 7, chest: 7 };
-      const shelf = shelves[name];
-      if (shelf === undefined) throw new Error(`No stock location for ${name}`);
-      for (const z of [shelf]) for (const x of z === 7 ? [-11] : [-11, -10]) {
-        await this.move(id, { x: x + 2, y: 64, z });
-        const chest = await this.deadline(bot.openContainer(bot.blockAt(new Vec3(x, 64, z))!));
-        try {
-          this.check();
-          const available = deposit ? (this.inventory(id)[name] ?? 0) : chest.containerItems().filter(i => i.name === name).reduce((s, i) => s + i.count, 0);
-          const amount = Math.min(remaining, available);
-          if (amount > 0) {
-            if (deposit) await this.deadline(chest.deposit(item.id, null, amount));
-            else await this.deadline(chest.withdraw(item.id, null, amount));
-            remaining -= amount;
-          }
-        } finally { chest.close(); await bot.waitForTicks(5); }
-        if (remaining === 0) return { transferred: count };
-      }
-      throw new Error(`Supply unavailable: ${name}, ${remaining} still required`);
-    });
+    return this.resources.transfer(id, name, count, deposit);
   }
   async ensure(id: AgentId, placements: Placement[]) {
-    const counts: Record<string, number> = { dirt: 32 };
-    for (const p of placements) counts[p.name] = (counts[p.name] ?? 0) + 1;
+    const counts: Record<string, number> = {};
+    if (!(this.inventory(id).dirt >= 16)) await this.resources.acquire(id, 'dirt', 16);
+    for (const p of placements) if(this.bot(id).blockAt(new Vec3(p.x,p.y,p.z))?.name!==p.name) counts[p.name] = (counts[p.name] ?? 0) + 1;
     for (const [name, count] of Object.entries(counts)) {
       const missing = count - (this.inventory(id)[name] ?? 0);
       if (missing > 0) await this.transfer(id, name, missing);
     }
   }
-  async place(id: AgentId, placement: Placement) {
+  async place(id: AgentId, placement: Placement, workshop = false) {
     this.check();
-    if (!bounded(placement)) throw new Error('Placement outside construction bounds');
+    if (!bounded(placement) && !(workshop && Math.abs(placement.x)<=7 && placement.z>=8 && placement.z<=12 && placement.y===64)) throw new Error('Placement outside construction bounds');
     const bot = this.bot(id), target = new Vec3(placement.x, placement.y, placement.z);
     if (bot.blockAt(target)?.name === placement.name) {
       if (placement.facing && bot.blockAt(target)?.getProperties().facing !== placement.facing) throw new Error('Existing block has incorrect orientation; remove it before retrying');
@@ -122,7 +143,7 @@ export class World {
       const approaches = [[2,0],[-2,0],[0,2],[0,-2]].map(([dx,dz]) => target.offset(dx,0,dz)).filter(p =>
         bot.blockAt(p)?.name === 'air' && bot.blockAt(p.offset(0,1,0))?.name === 'air' && bot.blockAt(p.offset(0,-1,0))?.boundingBox === 'block');
       if (!approaches.length) throw new Error('No clear approach beside the bed');
-      try { await this.deadline(bot.pathfinder.goto(new goals.GoalCompositeAny(approaches.map(p=>new goals.GoalBlock(p.x,p.y,p.z)))), 20000); }
+      try { await this.navigate(id,new goals.GoalCompositeAny(approaches.map(p=>new goals.GoalBlock(p.x,p.y,p.z)))); }
       catch (error) { throw new Error(`Bed approach failed from ${bot.entity.position}: ${error}`); }
       finally { bot.pathfinder.setGoal(null); }
     }
@@ -132,18 +153,52 @@ export class World {
         ? [new Vec3(0, -1, 0)]
         : [new Vec3(0, -1, 0), new Vec3(1, 0, 0), new Vec3(-1, 0, 0), new Vec3(0, 0, 1), new Vec3(0, 0, -1)]
     } as ConstructorParameters<typeof goals.GoalPlaceBlock>[2]) as InstanceType<typeof goals.GoalPlaceBlock> & { getFaceAndRef(p: Vec3): { ref: Vec3; face: Vec3 } | null };
-    try { await this.deadline(bot.pathfinder.goto(goal), 20000); }
-    catch (error) { throw new Error(`Placement approach failed from ${bot.entity.position} to ${target}: ${error}`); }
-    finally { bot.pathfinder.setGoal(null); }
-    this.check();
-    const node = goal.getFaceAndRef(bot.entity.position.offset(0, 1.62, 0)) as { ref: Vec3; face: Vec3 } | null;
+    // Grid path endpoints are approximate. Check real eye position and body
+    // clearance, trying another reachable tile when an edge obscures the face.
+    const rejected = new Set<string>();
+    const isEnd = goal.isEnd.bind(goal);
+    goal.isEnd = p => !rejected.has(`${p.x},${p.y},${p.z}`) && isEnd(p);
+    const actualFace = () => {
+      const p = bot.entity.position;
+      if (Math.abs(p.x-target.x-0.5)<0.81 && Math.abs(p.z-target.z-0.5)<0.81 && p.y<target.y+1 && p.y+1.8>target.y) return null;
+      return goal.getFaceAndRef(p.offset(0,1.62,0));
+    };
+    const rejectCurrent = () => { const p = bot.entity.position.floored(); rejected.add(`${p.x},${p.y},${p.z}`); };
+    if (!actualFace()) rejectCurrent();
+    let node: { ref: Vec3; face: Vec3 } | null = null;
+    for (let attempt = 0; attempt < 4 && !node; attempt++) {
+      try { await this.navigate(id,goal); }
+      catch (error) { throw new Error(`Placement approach failed from ${bot.entity.position} to ${target}: ${error}`); }
+      finally { bot.pathfinder.setGoal(null); }
+      this.check();
+      node = actualFace();
+      if (!node) rejectCurrent();
+    }
     if (!node) throw new Error(`No reachable placement face at ${target}; bot position ${bot.entity.position}`);
-    await bot.equip(item, 'hand');
-    if (placement.facing) {
-      const yaw = { north: 0, south: Math.PI, east: -Math.PI / 2, west: Math.PI / 2 }[placement.facing];
-      await bot.look(yaw, 0, true); await bot.waitForTicks(3);
-      await this.deadline((bot as Bot & { _placeBlockWithOptions(block: NonNullable<ReturnType<Bot['blockAt']>>, face: Vec3, options: object): Promise<void> })._placeBlockWithOptions(bot.blockAt(node.ref)!, node.face.scaled(-1), { forceLook: 'ignore', swingArm: 'right' }));
-    } else await this.deadline(bot.placeBlock(bot.blockAt(node.ref)!, node.face.scaled(-1)));
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await bot.equip(item, 'hand');
+      await bot.waitForTicks(3);
+      try {
+        if (placement.facing) {
+          const yaw = { north: 0, south: Math.PI, east: -Math.PI / 2, west: Math.PI / 2 }[placement.facing];
+          await bot.look(yaw, 0, true);
+        } else await bot.lookAt(node.ref.offset(0.5, 0.5, 0.5).minus(node.face.scaled(0.5)), true);
+        // The bridge must deliver the new look before the interaction tick.
+        await bot.waitForTicks(3);
+        await this.deadline((bot as Bot & { _placeBlockWithOptions(block: NonNullable<ReturnType<Bot['blockAt']>>, face: Vec3, options: object): Promise<void> })._placeBlockWithOptions(bot.blockAt(node.ref)!, node.face.scaled(-1), { forceLook: 'ignore', swingArm: 'right' }));
+      } catch (error) {
+        await bot.waitForTicks(5);
+        if (bot.blockAt(target)?.name === placement.name) break;
+        if (attempt === 2) throw new Error(`Placement ${placement.name} at ${target} from ${bot.entity.position}, reference ${node.ref}, face ${node.face}, held ${bot.heldItem?.name}: ${error}`);
+        this.check();
+        rejectCurrent();
+        await this.navigate(id, goal);
+        node = actualFace();
+        if (!node) throw new Error(`No alternate placement face at ${target}`);
+        continue;
+      }
+      break;
+    }
     await bot.waitForTicks(3);
     const result = bot.blockAt(target);
     if (result?.name !== placement.name || (placement.facing && result.getProperties().facing !== placement.facing)) throw new Error(`Placement verification failed at ${target}`);
@@ -152,17 +207,23 @@ export class World {
   async remove(id: AgentId, p: Position) {
     this.check(); if (!bounded(p)) throw new Error('Removal outside construction bounds');
     const bot = this.bot(id), target = new Vec3(p.x, p.y, p.z);
-    try { await this.deadline(bot.pathfinder.goto(new goals.GoalLookAtBlock(target, bot.world, { reach: 3.5 })), 20000); }
+    if (bot.blockAt(target)?.name === 'air') return;
+    try { await this.navigate(id,new ReachBlockGoal(target,bot.world,{reach:3.5})); }
     finally { bot.pathfinder.setGoal(null); }
     this.check();
     const block = bot.blockAt(target);
     if (!block || block.name === 'air') return;
-    const tool = bot.inventory.items().find(i => i.name === (block.name === 'dirt' ? 'iron_shovel' : block.name.includes('stone') ? 'iron_pickaxe' : 'iron_axe'));
+    const suffix = block.name === 'dirt' ? '_shovel' : block.name.includes('stone') ? '_pickaxe' : '_axe';
+    const tool = bot.inventory.items().find(i => i.name.endsWith(suffix));
     if (tool) await bot.equip(tool, 'hand');
     await this.deadline(bot.dig(block)); await bot.waitForTicks(3);
     if (bot.blockAt(target)?.name !== 'air') throw new Error('Break verification failed');
   }
   async cleanup(id: AgentId) {
+    return this.cleanupQueue.run(() => this.cleanupSupports(id));
+  }
+  private async cleanupSupports(id: AgentId) {
+    this.check();
     const blocks = (await this.snapshot()).blocks.filter(([, , , state]) => state.startsWith('minecraft:dirt') || state.startsWith('minecraft:scaffolding')).sort((a,b)=>b[1]-a[1]);
     const bot = this.bot(id);
     const movements = bot.pathfinder.movements;

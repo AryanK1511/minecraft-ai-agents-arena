@@ -1,0 +1,41 @@
+{
+  "players": [
+    {
+      "inventory": {},
+      "mode": "SURVIVAL",
+      "name": "agent1",
+      "z": 11.5,
+      "y": 64,
+      "x": -1.5
+    },
+    {
+      "inventory": {},
+      "mode": "SURVIVAL",
+      "name": "agent2",
+      "z": 11.5,
+      "y": 64,
+      "x": 1.5
+    },
+    {
+      "inventory": {},
+      "mode": "SURVIVAL",
+      "name": "agent3",
+      "z": 11.5,
+      "y": 64,
+      "x": 4.5
+    }
+  ],
+  "resources": {
+    "coal_ore": 48,
+    "iron_ore": 24,
+    "oak_log": 90,
+    "sand": 114
+  },
+  "sheep": 9,
+  "workstations": [],
+  "blocks": [],
+  "storage": {},
+  "paused": true,
+  "revision": 1,
+  "environment": "natural-biome-v1"
+}

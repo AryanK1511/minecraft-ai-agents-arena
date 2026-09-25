@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-25",
+  "run": "777851d2-6ef0-4ae5-a4c8-3589a6a2107b",
+  "fixture": "Preserved unfinished floor; no reset or administrative construction",
+  "actor": "agent2",
+  "from": [0.586817816614881, 64, -0.3137902246375189],
+  "goal": [0, 65, 2],
+  "before": { "result": "20-second movement timeout", "serverCorrections": 384 },
+  "after": {
+    "playerHalfWidth": 0.301,
+    "result": "Goal reached in survival",
+    "serverCorrections": 0,
+    "serverPosition": [0.49309395978052073, 65, 1.5]
+  },
+  "modelRequests": 0
+}

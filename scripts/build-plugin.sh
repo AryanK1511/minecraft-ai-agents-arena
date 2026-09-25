@@ -5,7 +5,7 @@ mkdir -p .runtime/plugin-build .runtime/plugins
 # Bootstrap from the exact proof server so compile/runtime API versions agree.
 if [ ! -d .runtime/paper-libraries/libraries ]; then
   mkdir -p .runtime/paper-libraries
-  docker compose -f compatibility/compose.yaml cp minecraft:/data/libraries .runtime/paper-libraries/
+  docker compose cp minecraft:/data/libraries .runtime/paper-libraries/
 fi
 if [ ! -f .runtime/paper-libraries/annotations-26.0.2.jar ]; then
   curl --fail --location https://repo.maven.apache.org/maven2/org/jetbrains/annotations/26.0.2/annotations-26.0.2.jar -o .runtime/paper-libraries/annotations-26.0.2.jar

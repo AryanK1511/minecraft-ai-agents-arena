@@ -24,7 +24,7 @@ export function plan(design: Design): Task[] {
   }
   for (let z = z0; z <= z1; z++) add(`roof-${z}`, Array.from({ length: design.width }, (_, i) => ({ x: x0 + i, y: top, z, name: design.roof })), wallIds);
   add('door', [{ x: 0, y: 65, z: z1, name: 'oak_door', facing: 'north' }], floorIds);
-  add('beds', [-(design.bedSpacing ?? 2), 0, design.bedSpacing ?? 2].map((x, i) => ({ x, y: 65, z: z0 + 2, name: ['red_bed', 'blue_bed', 'white_bed'][i], facing: 'south' })), floorIds);
+  add('beds', [-(design.bedSpacing ?? 2), 0, design.bedSpacing ?? 2].map((x, i) => ({ x, y: 65, z: z0 + 2, name: 'white_bed', facing: 'south' })), floorIds);
   add('furniture', [{ x: x0 + 1, y: 65, z: z1 - 1, name: 'crafting_table' }, { x: x1 - 1, y: 65, z: z1 - 1, name: 'chest' }], floorIds);
   add('lighting', [{ x: x0 + 1, y: 65, z: z0 + 1, name: 'torch' }, { x: x1 - 1, y: 65, z: z0 + 1, name: 'torch' }], floorIds);
   const turns = { south: 0, west: 1, north: 2, east: 3 }[design.doorSide ?? 'south'];
@@ -33,6 +33,34 @@ export function plan(design: Design): Task[] {
     for (let turn = 0; turn < turns; turn++) { const x = block.x; block.x = -block.z; block.z = x; }
     if (block.facing) block.facing = directions[(directions.indexOf(block.facing) + turns) % 4];
   }
-  return tasks;
+  const totals = new Map<string, number>();
+  for (const task of tasks) for (const block of task.blocks) totals.set(block.name, (totals.get(block.name) ?? 0) + 1);
+  const supplyTasks: Task[] = [];
+  const materialTasks = new Map<string, string[]>();
+  for (const [name, count] of totals) {
+    const ids: string[] = [];
+    for (let remaining=count, part=1; remaining>0; part++) {
+      const amount=Math.min(64,remaining), id=`supply-${name}-${part}`;
+      ids.push(id); remaining-=amount;
+      supplyTasks.push({id,label:`Gather and craft ${amount} ${name.replaceAll('_',' ')}`,kind:'supply',supplies:[{name,count:amount}],delivered:0,blocks:[],dependencies:[],status:'todo',failures:0});
+    }
+    materialTasks.set(name,ids);
+  }
+  for (const task of tasks) {
+    task.kind='build';
+    task.dependencies=[...new Set([...task.dependencies,...task.blocks.flatMap(block=>materialTasks.get(block.name) ?? [])])];
+  }
+  return [...supplyTasks,...tasks];
 }
 export const key = (p: { x: number; y: number; z: number }) => `${p.x},${p.y},${p.z}`;
+
+export function validateResources(design: Design, resources: Record<string, number>) {
+  const blocks = plan(design).flatMap(task => task.blocks);
+  const count = (name: string) => blocks.filter(block => block.name === name).length;
+  // Leave wood and fuel for all three workshops, tools, beds and team storage.
+  const logs = count('oak_log') + Math.ceil(count('oak_planks') / 4) + 20;
+  const coal = Math.ceil(count('stone_bricks') / 8) + 8;
+  if (logs > (resources.oak_log ?? 0) || coal > (resources.coal_ore ?? 0)) {
+    throw new Error(`The bounded biome cannot supply this design plus tools: needs about ${logs} logs and ${coal} coal. Choose a smaller house or use planks/cobblestone instead of whole logs/stone bricks.`);
+  }
+}
