@@ -1,0 +1,21 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { plan } from '../src/core/blueprint.js';
+import { inspect } from '../src/core/completion.js';
+import type { Blueprint, Snapshot } from '../src/core/types.js';
+test('completion requires actual roof, both bed and door halves, access, and no scaffold', () => {
+  const blueprint: Blueprint = { revision: 1, votes: ['agent1','agent2'], approved: true, design: { width:7,depth:7,height:4,wall:'oak_planks',floor:'stone_bricks',roof:'oak_planks',description:'test' } };
+  const tasks = plan(blueprint.design);
+  const blocks: Snapshot['blocks'] = tasks.flatMap(t=>t.blocks.map(p=>[p.x,p.y,p.z,`minecraft:${p.name}${p.facing?`[facing=${p.facing}${p.name.endsWith('_bed')?',part=foot':',half=lower'}]`:p.name==='chest'?'[facing=north]':''}`] as Snapshot['blocks'][number]));
+  for (const p of tasks.find(t=>t.id==='beds')!.blocks) blocks.push([p.x,p.y,p.z+1,`minecraft:${p.name}[facing=south,part=head]`]);
+  const door = tasks.find(t=>t.id==='door')!.blocks[0]; blocks.push([door.x,door.y+1,door.z,'minecraft:oak_door[facing=north,half=upper]']);
+  const snapshot = { blocks, players:[], paused:true, revision:1 };
+  const good = inspect(snapshot,blueprint,tasks);
+  assert.ok(Object.values(good).every(Boolean), JSON.stringify(good));
+  const roof = tasks.find(t=>t.id.startsWith('roof'))!.blocks[0];
+  assert.equal(inspect({...snapshot,blocks:blocks.filter(([x,y,z])=>x!==roof.x||y!==roof.y||z!==roof.z)},blueprint,tasks).completeRoof,false);
+  assert.equal(inspect({...snapshot,blocks:blocks.filter(([,y,z,s])=>!(s.includes('oak_door')&&y===66&&z===door.z))},blueprint,tasks).accessibleDoor,false);
+  assert.equal(inspect({...snapshot,blocks:blocks.filter(([, , ,s])=>!s.includes('red_bed')||!s.includes('part=head'))},blueprint,tasks).threeBeds,false);
+  assert.equal(inspect({...snapshot,blocks:[...blocks,[0,65,2,'minecraft:dirt']]},blueprint,tasks).scaffoldCleanup,false);
+  assert.equal(inspect({...snapshot,blocks:[...blocks,[0,65,2,'minecraft:stone'],[0,66,2,'minecraft:stone']]},blueprint,tasks).reachableInterior,false);
+});

@@ -1,0 +1,85 @@
+[
+  {
+    "test": "connected",
+    "detail": {
+      "username": "agent1",
+      "version": "26.1",
+      "gameMode": "survival"
+    },
+    "at": "2026-09-25T12:27:40.981Z"
+  },
+  {
+    "test": "kicked",
+    "detail": {
+      "username": "agent1",
+      "reason": {
+        "type": "compound",
+        "value": {
+          "translate": {
+            "type": "string",
+            "value": "multiplayer.disconnect.invalid_player_movement"
+          }
+        }
+      }
+    },
+    "at": "2026-09-25T12:27:42.244Z"
+  },
+  {
+    "test": "connected",
+    "detail": {
+      "username": "agent2",
+      "version": "26.1",
+      "gameMode": "survival"
+    },
+    "at": "2026-09-25T12:27:45.630Z"
+  },
+  {
+    "test": "kicked",
+    "detail": {
+      "username": "agent2",
+      "reason": {
+        "type": "compound",
+        "value": {
+          "translate": {
+            "type": "string",
+            "value": "multiplayer.disconnect.invalid_player_movement"
+          }
+        }
+      }
+    },
+    "at": "2026-09-25T12:27:46.862Z"
+  },
+  {
+    "test": "connected",
+    "detail": {
+      "username": "agent3",
+      "version": "26.1",
+      "gameMode": "survival"
+    },
+    "at": "2026-09-25T12:27:50.286Z"
+  },
+  {
+    "test": "kicked",
+    "detail": {
+      "username": "agent3",
+      "reason": {
+        "type": "compound",
+        "value": {
+          "translate": {
+            "type": "string",
+            "value": "multiplayer.disconnect.invalid_player_movement"
+          }
+        }
+      }
+    },
+    "at": "2026-09-25T12:27:51.460Z"
+  },
+  {
+    "test": "BLOCKED",
+    "detail": {
+      "message": "Timeout waiting for 20 ticks after 6000ms",
+      "stack": "Error: Timeout waiting for 20 ticks after 6000ms\n    at Timeout._onTimeout (/Users/aryank/Developer/personal/minecraft-ai-agents-arena/node_modules/mineflayer/lib/plugins/physics.js:462:16)\n    at listOnTimeout (node:internal/timers:685:17)\n    at process.processTimers (node:internal/timers:618:7)"
+    },
+    "at": "2026-09-25T12:28:01.005Z"
+  }
+]

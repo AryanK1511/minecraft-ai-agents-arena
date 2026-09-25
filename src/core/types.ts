@@ -1,0 +1,10 @@
+export type AgentId = 'agent1' | 'agent2' | 'agent3';
+export const IDS: AgentId[] = ['agent1', 'agent2', 'agent3'];
+export type Position = { x: number; y: number; z: number };
+export type Placement = Position & { name: string; facing?: 'north' | 'south' | 'east' | 'west' };
+export type Design = { width: number; depth: number; height: number; wall: string; floor: string; roof: string; description: string; doorSide?: 'north' | 'south' | 'east' | 'west'; bedSpacing?: number };
+export type Blueprint = { revision: number; design: Design; votes: AgentId[]; approved: boolean };
+export type Task = { id: string; label: string; blocks: Placement[]; dependencies: string[]; status: 'todo' | 'claimed' | 'done'; owner?: AgentId; failures: number; error?: string };
+export type AgentState = { model: string; connected: boolean; action: string; memory: string; spent: number; failures: number; contributions: number; inventory: Record<string, number>; messages: { role: string; content: string }[] };
+export type RunState = { id: string; status: 'paused' | 'running' | 'complete'; reason: string; limit: number; spent: number; reservations: Record<string, number>; blueprint?: Blueprint; tasks: Task[]; agents: Record<AgentId, AgentState>; messages: { agent: string; text: string; at: string }[]; checklist: Record<string, boolean>; revision: number };
+export type Snapshot = { revision: number; paused: boolean; blocks: [number, number, number, string][]; players: { name: string; x: number; y: number; z: number; mode: string }[] };

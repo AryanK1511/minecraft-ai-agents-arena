@@ -1,0 +1,258 @@
+[
+  {
+    "test": "connected",
+    "detail": {
+      "username": "agent1",
+      "version": "26.1",
+      "gameMode": "survival"
+    },
+    "at": "2026-09-25T12:31:28.626Z"
+  },
+  {
+    "test": "connected",
+    "detail": {
+      "username": "agent2",
+      "version": "26.1",
+      "gameMode": "survival"
+    },
+    "at": "2026-09-25T12:31:33.277Z"
+  },
+  {
+    "test": "connected",
+    "detail": {
+      "username": "agent3",
+      "version": "26.1",
+      "gameMode": "survival"
+    },
+    "at": "2026-09-25T12:31:37.933Z"
+  },
+  {
+    "test": "walked",
+    "detail": {
+      "username": "agent1",
+      "position": {
+        "x": -1.4889095480998058,
+        "y": 64,
+        "z": 0.5
+      }
+    },
+    "at": "2026-09-25T12:31:45.028Z"
+  },
+  {
+    "test": "inventory",
+    "detail": {
+      "username": "agent1",
+      "items": [
+        {
+          "name": "oak_door",
+          "count": 1
+        },
+        {
+          "name": "red_bed",
+          "count": 1
+        },
+        {
+          "name": "oak_planks",
+          "count": 16
+        }
+      ]
+    },
+    "at": "2026-09-25T12:31:45.693Z"
+  },
+  {
+    "test": "placed",
+    "detail": {
+      "username": "agent1",
+      "target": {
+        "x": 2,
+        "y": 64,
+        "z": 0
+      }
+    },
+    "at": "2026-09-25T12:31:47.255Z"
+  },
+  {
+    "test": "broke",
+    "detail": {
+      "username": "agent1",
+      "target": {
+        "x": 2,
+        "y": 64,
+        "z": 0
+      }
+    },
+    "at": "2026-09-25T12:31:50.812Z"
+  },
+  {
+    "test": "walked",
+    "detail": {
+      "username": "agent2",
+      "position": {
+        "x": -1.4840729124662213,
+        "y": 64,
+        "z": 0.5
+      }
+    },
+    "at": "2026-09-25T12:31:53.293Z"
+  },
+  {
+    "test": "inventory",
+    "detail": {
+      "username": "agent2",
+      "items": [
+        {
+          "name": "oak_planks",
+          "count": 16
+        }
+      ]
+    },
+    "at": "2026-09-25T12:31:54.014Z"
+  },
+  {
+    "test": "placed",
+    "detail": {
+      "username": "agent2",
+      "target": {
+        "x": 2,
+        "y": 64,
+        "z": 3
+      }
+    },
+    "at": "2026-09-25T12:31:55.328Z"
+  },
+  {
+    "test": "broke",
+    "detail": {
+      "username": "agent2",
+      "target": {
+        "x": 2,
+        "y": 64,
+        "z": 3
+      }
+    },
+    "at": "2026-09-25T12:31:58.883Z"
+  },
+  {
+    "test": "walked",
+    "detail": {
+      "username": "agent3",
+      "position": {
+        "x": -1.4760824885340469,
+        "y": 64,
+        "z": 0.5
+      }
+    },
+    "at": "2026-09-25T12:32:01.585Z"
+  },
+  {
+    "test": "inventory",
+    "detail": {
+      "username": "agent3",
+      "items": [
+        {
+          "name": "oak_planks",
+          "count": 17
+        }
+      ]
+    },
+    "at": "2026-09-25T12:32:02.154Z"
+  },
+  {
+    "test": "placed",
+    "detail": {
+      "username": "agent3",
+      "target": {
+        "x": 2,
+        "y": 64,
+        "z": 6
+      }
+    },
+    "at": "2026-09-25T12:32:04.126Z"
+  },
+  {
+    "test": "broke",
+    "detail": {
+      "username": "agent3",
+      "target": {
+        "x": 2,
+        "y": 64,
+        "z": 6
+      }
+    },
+    "at": "2026-09-25T12:32:07.681Z"
+  },
+  {
+    "test": "oriented-placement",
+    "detail": {
+      "username": "agent1",
+      "target": {
+        "x": 4,
+        "y": 64,
+        "z": -4
+      },
+      "name": "oak_stairs",
+      "properties": {
+        "waterlogged": false,
+        "shape": "straight",
+        "half": "bottom",
+        "facing": "north"
+      }
+    },
+    "at": "2026-09-25T12:32:10.525Z"
+  },
+  {
+    "test": "oriented-placement",
+    "detail": {
+      "username": "agent1",
+      "target": {
+        "x": 7,
+        "y": 64,
+        "z": -4
+      },
+      "name": "oak_door",
+      "properties": {
+        "powered": false,
+        "open": false,
+        "hinge": "left",
+        "half": "lower",
+        "facing": "north"
+      }
+    },
+    "at": "2026-09-25T12:32:12.404Z"
+  },
+  {
+    "test": "oriented-placement",
+    "detail": {
+      "username": "agent1",
+      "target": {
+        "x": 10,
+        "y": 64,
+        "z": -4
+      },
+      "name": "red_bed",
+      "properties": {
+        "part": "foot",
+        "occupied": false,
+        "facing": "north"
+      }
+    },
+    "at": "2026-09-25T12:32:13.724Z"
+  },
+  {
+    "test": "connected",
+    "detail": {
+      "username": "agent1",
+      "version": "26.1",
+      "gameMode": "survival"
+    },
+    "at": "2026-09-25T12:32:18.373Z"
+  },
+  {
+    "test": "basic-bridge-pass",
+    "detail": {
+      "spectator26_3": "requires real client validation",
+      "orientedBlocks": "passed stairs, door, bed fixture"
+    },
+    "at": "2026-09-25T12:32:18.373Z"
+  }
+]

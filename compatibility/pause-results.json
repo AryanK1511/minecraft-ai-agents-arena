@@ -1,0 +1,18 @@
+{
+  "at": "2026-09-25T13:16:22.395Z",
+  "run": "777851d2-6ef0-4ae5-a4c8-3589a6a2107b",
+  "spent": 15451239,
+  "modelReservationSequence": 273,
+  "completedTasks": [
+    "floor--3",
+    "floor-0",
+    "floor-1",
+    "floor-2"
+  ],
+  "contributions": {
+    "agent1": 14,
+    "agent2": 7,
+    "agent3": 7
+  },
+  "result": "No new model reservations or spending while paused"
+}

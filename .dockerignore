@@ -1,0 +1,11 @@
+.env
+.git
+.runtime
+node_modules
+dist
+dashboard/dist
+shared/runs
+.agents
+.claude
+.cursor
+.vscode

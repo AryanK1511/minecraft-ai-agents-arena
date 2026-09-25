@@ -1,0 +1,85 @@
+{
+  "checkedAt": "2026-09-25T12:21:16.910Z",
+  "models": [
+    {
+      "id": "qwen/qwen3-30b-a3b-instruct-2507",
+      "available": true,
+      "pricing": {
+        "prompt": "0.0000001",
+        "completion": "0.0000003"
+      },
+      "supported_parameters": [
+        "frequency_penalty",
+        "logit_bias",
+        "logprobs",
+        "max_tokens",
+        "presence_penalty",
+        "repetition_penalty",
+        "response_format",
+        "seed",
+        "stop",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_k",
+        "top_logprobs",
+        "top_p"
+      ]
+    },
+    {
+      "id": "mistralai/mistral-small-3.2-24b-instruct",
+      "available": true,
+      "pricing": {
+        "prompt": "0.00000009375",
+        "completion": "0.00000025"
+      },
+      "supported_parameters": [
+        "frequency_penalty",
+        "logit_bias",
+        "logprobs",
+        "max_tokens",
+        "min_p",
+        "presence_penalty",
+        "repetition_penalty",
+        "response_format",
+        "seed",
+        "stop",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_k",
+        "top_logprobs",
+        "top_p"
+      ]
+    },
+    {
+      "id": "meta-llama/llama-3.3-70b-instruct",
+      "available": true,
+      "pricing": {
+        "prompt": "0.0000001",
+        "completion": "0.00000032"
+      },
+      "supported_parameters": [
+        "frequency_penalty",
+        "logit_bias",
+        "logprobs",
+        "max_tokens",
+        "min_p",
+        "presence_penalty",
+        "repetition_penalty",
+        "response_format",
+        "seed",
+        "stop",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_k",
+        "top_logprobs",
+        "top_p"
+      ]
+    }
+  ]
+}

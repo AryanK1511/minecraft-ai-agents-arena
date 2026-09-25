@@ -1,0 +1,68 @@
+[
+  {
+    "test": "arena-joined",
+    "detail": {
+      "username": "agent1",
+      "position": {
+        "x": -1.5,
+        "y": 64,
+        "z": 11.5
+      }
+    },
+    "at": "2026-09-25T12:42:51.492Z"
+  },
+  {
+    "test": "arena-joined",
+    "detail": {
+      "username": "agent2",
+      "position": {
+        "x": 1.5,
+        "y": 64,
+        "z": 11.5
+      }
+    },
+    "at": "2026-09-25T12:42:57.857Z"
+  },
+  {
+    "test": "arena-joined",
+    "detail": {
+      "username": "agent3",
+      "position": {
+        "x": 4.5,
+        "y": 64,
+        "z": 11.5
+      }
+    },
+    "at": "2026-09-25T12:43:04.206Z"
+  },
+  {
+    "test": "arena-floor-void-boundary",
+    "detail": {},
+    "at": "2026-09-25T12:43:08.707Z"
+  },
+  {
+    "test": "elevated-survival-placement",
+    "detail": {},
+    "at": "2026-09-25T12:43:15.866Z"
+  },
+  {
+    "test": "pause-rejects-placement",
+    "detail": {},
+    "at": "2026-09-25T12:43:16.008Z"
+  },
+  {
+    "test": "protected-floor",
+    "detail": {},
+    "at": "2026-09-25T12:43:17.140Z"
+  },
+  {
+    "test": "fixture-cleanup",
+    "detail": {},
+    "at": "2026-09-25T12:43:19.922Z"
+  },
+  {
+    "test": "arena-probe-pass",
+    "detail": {},
+    "at": "2026-09-25T12:43:19.922Z"
+  }
+]

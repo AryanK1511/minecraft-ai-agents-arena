@@ -1,0 +1,25 @@
+{
+  "at": "2026-09-25T13:17:51.550Z",
+  "run": "777851d2-6ef0-4ae5-a4c8-3589a6a2107b",
+  "spent": 15451239,
+  "preservedBlocks": 28,
+  "players": [
+    {
+      "name": "aryank1511",
+      "mode": "SPECTATOR"
+    },
+    {
+      "name": "agent1",
+      "mode": "SURVIVAL"
+    },
+    {
+      "name": "agent2",
+      "mode": "SURVIVAL"
+    },
+    {
+      "name": "agent3",
+      "mode": "SURVIVAL"
+    }
+  ],
+  "result": "Restarted paused with identical world blocks, run id, cost and contributions"
+}

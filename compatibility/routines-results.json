@@ -1,0 +1,107 @@
+{
+  "at": "2026-09-25T13:04:40.313Z",
+  "cleanup": {
+    "removed": 2
+  },
+  "snapshot": {
+    "players": [
+      {
+        "x": 30,
+        "y": 94,
+        "z": 38,
+        "name": "aryank1511",
+        "mode": "SPECTATOR",
+        "inventory": {}
+      },
+      {
+        "x": -1.454461751434296,
+        "y": 64.5625,
+        "z": -0.5,
+        "name": "agent1",
+        "mode": "SURVIVAL",
+        "inventory": {
+          "dirt": 30,
+          "iron_axe": 1,
+          "iron_pickaxe": 1,
+          "iron_shovel": 1
+        }
+      },
+      {
+        "x": 1.5,
+        "y": 64,
+        "z": 11.5,
+        "name": "agent2",
+        "mode": "SURVIVAL",
+        "inventory": {
+          "iron_axe": 1,
+          "iron_pickaxe": 1,
+          "iron_shovel": 1
+        }
+      },
+      {
+        "x": 4.5,
+        "y": 64,
+        "z": 11.5,
+        "name": "agent3",
+        "mode": "SURVIVAL",
+        "inventory": {
+          "iron_axe": 1,
+          "iron_pickaxe": 1,
+          "iron_shovel": 1
+        }
+      }
+    ],
+    "revision": 35,
+    "paused": false,
+    "blocks": [
+      [
+        -2,
+        64,
+        -1,
+        "minecraft:red_bed[facing=north,occupied=false,part=head]"
+      ],
+      [
+        -2,
+        64,
+        0,
+        "minecraft:red_bed[facing=north,occupied=false,part=foot]"
+      ],
+      [
+        0,
+        64,
+        0,
+        "minecraft:oak_planks"
+      ],
+      [
+        0,
+        65,
+        0,
+        "minecraft:oak_planks"
+      ],
+      [
+        0,
+        66,
+        0,
+        "minecraft:oak_planks"
+      ],
+      [
+        0,
+        67,
+        0,
+        "minecraft:oak_planks"
+      ],
+      [
+        2,
+        64,
+        0,
+        "minecraft:oak_door[facing=north,half=lower,hinge=left,open=false,powered=false]"
+      ],
+      [
+        2,
+        65,
+        0,
+        "minecraft:oak_door[facing=north,half=upper,hinge=left,open=false,powered=false]"
+      ]
+    ]
+  }
+}

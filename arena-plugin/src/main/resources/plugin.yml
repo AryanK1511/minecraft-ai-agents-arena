@@ -1,0 +1,8 @@
+name: HouseArena
+version: 0.1.0
+main: local.arena.HouseArena
+api-version: '26.3'
+load: POSTWORLD
+commands:
+  arena:
+    description: Internal arena lifecycle and observation commands

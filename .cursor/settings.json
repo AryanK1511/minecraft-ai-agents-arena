@@ -1,0 +1,22 @@
+{
+  "plugins": {
+    "mongodb": {
+      "enabled": true
+    },
+    "vercel": {
+      "enabled": true
+    },
+    "stripe": {
+      "enabled": true
+    },
+    "context7-plugin": {
+      "enabled": true
+    },
+    "supabase": {
+      "enabled": true
+    },
+    "langfuse": {
+      "enabled": true
+    }
+  }
+}

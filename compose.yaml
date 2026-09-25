@@ -1,0 +1,47 @@
+name: compatibility
+services:
+  minecraft:
+    image: itzg/minecraft-server:java25@sha256:48aca78eb828a2ff5ac9db5ae17774c32c63f076b4bc2aa5b31cc11e474bd15e
+    ports:
+      - '127.0.0.1:25565:25565'
+    environment:
+      EULA: '${EULA:?Set EULA=TRUE only after accepting https://aka.ms/MinecraftEULA}'
+      TYPE: CUSTOM
+      CUSTOM_SERVER: /artifacts/paper-26.3-41.jar
+      MEMORY: 2G
+      ONLINE_MODE: 'FALSE'
+      ENFORCE_SECURE_PROFILE: 'FALSE'
+      ENABLE_WHITELIST: 'TRUE'
+      WHITELIST: agent1,agent2,agent3,aryank1511
+      OPS: ''
+      ENABLE_RCON: 'TRUE'
+      RCON_PASSWORD: local-compatibility-only
+      DIFFICULTY: peaceful
+      MODE: survival
+      PVP: 'FALSE'
+      SPAWN_PROTECTION: '0'
+      LEVEL_TYPE: minecraft:flat
+      GENERATOR_SETTINGS: '{"layers":[{"block":"minecraft:bedrock","height":1},{"block":"minecraft:stone","height":63}],"biome":"minecraft:plains"}'
+    volumes:
+      - ./.runtime/artifacts:/artifacts:ro
+      - ./.runtime/plugins:/plugins:ro
+      - proof-world:/data
+  app:
+    build: .
+    ports:
+      - '127.0.0.1:3000:3000'
+    env_file: .env
+    environment:
+      MC_HOST: minecraft
+      RCON_PASSWORD: local-compatibility-only
+      RUN_BUDGET_USD: '${RUN_BUDGET_USD:-1}'
+    depends_on:
+      minecraft:
+        condition: service_healthy
+    volumes:
+      - ./agents:/app/agents:ro
+      - ./shared:/app/shared
+    stop_grace_period: 100s
+    restart: unless-stopped
+volumes:
+  proof-world:
